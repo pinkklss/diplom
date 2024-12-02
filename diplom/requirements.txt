@@ -1,0 +1,11 @@
+requests~=2.25.1
+PyYAML~=5.4.1
+ujson == 4.0.2
+Django ==3.2.4
+django-filter == 2.4.0
+djangorestframework == 3.12.4
+django_rest_passwordreset ==1.2.0
+celery ==5.1.1
+redis == 3.5.3
+flower==0.9.7
+drf_spectacular ==0.17.2
