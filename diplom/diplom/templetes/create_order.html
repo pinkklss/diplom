@@ -1,0 +1,11 @@
+<form method="post">
+    {% csrf_token %}
+    <h2>Create Order</h2>
+    <label for="order_items">Select Product and Quantity:</label>
+    <select name="order_items">
+        {% for product in products %}
+            <option value="{{ product.id }}, 1">{{ product.name }} - {{ product.price }}</option>
+        {% endfor %}
+    </select>
+    <button type="submit">Create Order</button>
+</form>
