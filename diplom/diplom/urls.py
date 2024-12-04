@@ -16,7 +16,14 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from .views import create_order, order_detail, process_payment
+from .views import register, login_view
 
 urlpatterns = [
+    path('create-order/', create_order, name='create_order'),
+    path('order/<int:order_id>/', order_detail, name='order_detail'),
+    path('order/<int:order_id>/payment/', process_payment, name='process_payment'),
     path('admin/', admin.site.urls),
+    path('accounts/', include('accounts.urls')),
+    path('register/', register, name='register'),
 ]
