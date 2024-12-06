@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
-from .forms import ProductForm, OrderForm, OrderItemForm
+from shop.forms import ShopForm, ProductForm, CategoryForm, OrderForm, OrderItemForm
+from shop.models import Shop, Product, Category, Order, OrderItem
 
 
 def create_order(request):

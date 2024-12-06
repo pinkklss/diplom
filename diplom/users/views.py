@@ -1,8 +1,8 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login
 from django.contrib import messages
-from users.forms import CustomUserCreationForm, SuperuserCreationForm, UserCreationForm
-
+from users.forms import UserRegistrationForm, CustomUserCreationForm, ContactForm
+from users.models import UserManager, User, UserProfileForm, Contact
 
 
 def register(request):
@@ -38,14 +38,4 @@ def register_user(request):
 
     return render(request, 'registration/register_user.html', {'form': form})
 
-def register_superuser(request):
-    if request.method == 'POST':
-        form = SuperuserCreationForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('admin:index')
-    else:
-        form = SuperuserCreationForm()
-
-    return render(request, 'registration/register_superuser.html', {'form': form})
 

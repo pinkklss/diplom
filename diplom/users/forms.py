@@ -1,13 +1,12 @@
 from django import forms
-from users.models import User, UserManager, Contact
-from django.contrib.auth import get_user_model
+from users.models import User, Contact
 
 
 class UserRegistrationForm(forms.ModelForm):
     password = forms.CharField(widget=forms.PasswordInput, label='Password')
     confirm_password = forms.CharField(widget=forms.PasswordInput, label='Confirm Password')
     class Meta:
-        model = UserManager
+        model = User
         fields = ['email', 'password', 'company', 'position']
 
     def clean(self):
@@ -29,7 +28,7 @@ class UserRegistrationForm(forms.ModelForm):
         return user
 
 
-class UserProfileForm(forms.ModelForm):
+class CustomUserCreationForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ['email', 'company', 'position']

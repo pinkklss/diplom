@@ -1,17 +1,19 @@
 from django.db import models
+from django import forms
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AbstractUser
-from django import forms
-
 
 
 class UserManager(BaseUserManager):
     use_in_migrations = True
     def _create_user(self, email, password, **extra_fields):
+        model_meta = self.model._meta
+
         if not email:
-            raise ValueError('The given email must be set')
+            raise ValueError('Ошибка')
         email = self.normalize_email(email)
+
         user = self.model(email=email, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
@@ -33,16 +35,12 @@ class UserManager(BaseUserManager):
 
         return self._create_user(email, password, **extra_fields)
 
-    class _meta:
-        model = BaseUserManager
 
 class User(AbstractUser):
     email = models.EmailField(('email address'), unique=True)
     company = models.CharField(('Company'), max_length=30, blank=True)
     position = models.CharField(('Position'), max_length=30, blank=True)
 
-    USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = []
 
     objects = UserManager()
 
