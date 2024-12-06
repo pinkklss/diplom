@@ -12,6 +12,9 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 
+import users.apps
+import shop.apps
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -76,9 +79,13 @@ WSGI_APPLICATION = 'diplom.wsgi.application'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+    "default": {
+        "ENGINE": "django.db.backends.postgresql_psycopg2",
+        "NAME": "diploma",
+        "USER": "postgres",
+        "PASSWORD": "42751536309z",
+        "HOST": "localhost",
+        "PORT": "1234",
     }
 }
 
@@ -130,4 +137,4 @@ REST_FRAMEWORK = {
     ],
 }
 
-AUTH_USER_MODEL = 'models.User'
+AUTH_USER_MODEL = 'users.User'

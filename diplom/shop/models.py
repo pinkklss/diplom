@@ -1,8 +1,18 @@
 from django.db import models
-
-from django.db import models
 from django.contrib.auth.models import User
+from users.models import User, Contact
+from django.contrib.auth import get_user_model
 
+
+STATE_CHOICES = (
+    ('basket', 'Статус корзины'),
+    ('new', 'Новый'),
+    ('confirmed', 'Подтвержден'),
+    ('assembled', 'Собран'),
+    ('sent', 'Отправлен'),
+    ('delivered', 'Доставлен'),
+    ('canceled', 'Отменен'),
+)
 class Shop(models.Model):
     name = models.CharField(max_length=50, verbose_name='Название магазина')
     url = models.URLField(verbose_name='Ссылка', null=True, blank=True)
@@ -18,11 +28,10 @@ class Shop(models.Model):
         return self.name
 
 class Product(models.Model):
-    shop = models.ForeignKey(Shop, verbose_name='Магазин', related_name='products', on_delete=models.CASCADE)
     name = models.CharField(max_length=80, verbose_name='Название товара')
     description = models.TextField(verbose_name='Описание', blank=True)  # Поле для описания товара
     price = models.DecimalField(verbose_name='Цена', max_digits=10, decimal_places=2)  # Поле для цены товара
-    quantity = models.PositiveIntegerField(verbose_name='Количество в наличии', default=0)  # Поле для количества в наличии
+    quantity_in_stock = models.PositiveIntegerField(verbose_name='Количество в наличии', default=0)  # Поле для количества в наличии
 
     class Meta:
         verbose_name = 'Товар'
@@ -46,16 +55,40 @@ class Category(models.Model):
         return self.name
 
 
-class Product(models.Model):
-    name = models.CharField(max_length=80, verbose_name='Название')
-    category = models.ForeignKey(Category, verbose_name='Категория', related_name='products', blank=True,
-                                 on_delete=models.CASCADE)
+class Order(models.Model):
+    user = models.ForeignKey(User, verbose_name='Пользователь',
+                             related_name='orders', blank=True,
+                             on_delete=models.CASCADE)
+    dt = models.DateTimeField(auto_now_add=True)
+    state = models.CharField(verbose_name='Статус', choices=STATE_CHOICES, max_length=15)
+    contact = models.ForeignKey(Contact, verbose_name='Контакт',
+                                blank=True, null=True,
+                                on_delete=models.CASCADE)
 
     class Meta:
-        verbose_name = 'Продукт'
-        verbose_name_plural = "Список продуктов"
-        ordering = ('-name',)
+        verbose_name = 'Заказ'
+        verbose_name_plural = "Список заказ"
+        ordering = ('-dt',)
 
     def __str__(self):
-        return self.name
+        return str(self.dt)
+
+
+class OrderItem(models.Model):
+    order = models.ForeignKey(Order, verbose_name='Заказ', related_name='ordered_items', blank=True,
+                              on_delete=models.CASCADE)
+
+    product = models.ForeignKey(Product, verbose_name='Информация о продукте', related_name='ordered_items',
+                                blank=True,
+                                on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(verbose_name='Количество')
+
+    class Meta:
+        verbose_name = 'Заказанная позиция'
+        verbose_name_plural = "Список заказанных позиций"
+        constraints = [
+            models.UniqueConstraint(fields=['order_id', 'product'], name='unique_order_item'),
+        ]
+
+
 

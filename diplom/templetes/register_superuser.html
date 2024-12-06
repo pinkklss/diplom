@@ -2,14 +2,14 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>User Registration</title>
+    <title>Superuser Registration</title>
 </head>
 <body>
-    <h2>User Registration</h2>
+    <h2>Superuser Registration</h2>
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
-        <button type="submit">Register</button>
+        <button type="submit">Create Superuser</button>
     </form>
 </body>
 </html>

@@ -1,40 +1,36 @@
 from django.shortcuts import render, redirect
-from .models import Order, OrderItem, Payment
-from .forms import OrderForm, OrderItemForm
-from django.contrib.auth.decorators import login_required
+from .forms import ProductForm, OrderForm, OrderItemForm
 
 
-@login_required
 def create_order(request):
     if request.method == 'POST':
-        order = Order.objects.create(user=request.user)
-        for item in request.POST.getlist('order_items'):
-            product_id, quantity = item.split(',')
-            product = Product.objects.get(id=product_id)
-            order_item = OrderItem(order=order, product=product, quantity=quantity)
-            order_item.save()
-            order.total_price += product.price * quantity
-        order.save()
-        return redirect('order_detail', order_id=order.id)
+        order_form = OrderForm(request.POST)
+        order_item_form = OrderItemForm(request.POST)
+        if order_form.is_valid() and order_item_form.is_valid():
+            order = order_form.save()  # Сохраняем новый заказ
+            order_item = order_item_form.save(commit=False)  # Не сохраняем в базу данных сразу
+            order_item.order = order  # Присваиваем элементу заказа созданный заказ
+            order_item.save()  # Теперь сохраняем элемент заказа
+            return redirect('order_success')  # Перенаправление на страницу успешного создания заказа
+    else:
+        order_form = OrderForm()
+        order_item_form = OrderItemForm()
 
-    products = Product.objects.all()
-    return render(request, 'create_order.html', {'products': products})
-
-
-@login_required
-def order_detail(request, order_id):
-    order = Order.objects.get(id=order_id, user=request.user)
-    return render(request, 'order_detail.html', {'order': order})
+    return render(request, 'create_order.html', {
+        'order_form': order_form,
+        'order_item_form': order_item_form,
+    })
 
 
-@login_required
-def process_payment(request, order_id):
-    order = Order.objects.get(id=order_id, user=request.user)
+def create_product(request):
     if request.method == 'POST':
-        # В этом месте реальная логика обработки платежа
-        payment = Payment.objects.create(order=order, amount=order.total_price, status='Completed')
-        return redirect('order_detail', order_id=order.id)
+        form = ProductForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('product-list')
+    else:
+        form = ProductForm()
 
-    return render(request, 'process_payment.html', {'order': order})
+    return render(request, 'product_list.html', {'form': form})
 
 
